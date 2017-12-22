@@ -1,18 +1,15 @@
 import socket
 import config
 import logging
-from shared import Connection, parse_command
+from shared import Connection, ConnectionHandler, parse_command
 from threading import Thread
 
 logger = logging.getLogger()
 
 
-class Receiver(Thread):
+class Receiver(ConnectionHandler):
     def __init__(self, connection, owner):
-        super().__init__()
-        self.connection = connection
-        self.finished = False
-        self.disconnected = False
+        super().__init__(connection)
         self.owner = owner
 
     def run(self):
@@ -24,13 +21,8 @@ class Receiver(Thread):
             else:
                 self.disconnected = True
 
-    @property
-    def active(self):
-        return not self.disconnected and not self.finished
-
     def finish(self):
-        if not self.finished:
-            self.finished = True
+        self.finished = True
 
 
 class Client:
