@@ -2,9 +2,6 @@ import socket
 import config
 import logging
 from shared import Connection, ConnectionHandler, parse_command
-from threading import Thread
-
-logger = logging.getLogger()
 
 
 class Receiver(ConnectionHandler):
@@ -13,7 +10,7 @@ class Receiver(ConnectionHandler):
         self.owner = owner
 
     def run(self):
-        logger.debug(f"Ready to receive from {self.connection.address}")
+        logging.debug(f"Ready to receive from {self.connection.address}")
         while self.active:
             encoded_message = self.connection.socket.recv(1024)
             if encoded_message:
@@ -42,9 +39,9 @@ class Client:
     def __init__(self, address):
         self.address = address
         self.connection = Connection(socket.socket(socket.AF_INET, socket.SOCK_STREAM), self.address)
-        logger.info(f"Attempting to connect to {self.connection.address}")
+        logging.info(f"Attempting to connect to {self.connection.address}")
         self.connection.socket.connect(self.address)
-        logger.info("Connected successfully")
+        logging.info("Connected successfully")
 
         self.commands = {'dc': self.stop_command}
 
@@ -57,18 +54,20 @@ class Client:
 
     def main_loop(self):
         while not self.finished:
+            logging.debug("Loop")
             if self.receiver.disconnected:
-                logger.info("Disconnected")
+                logging.info("Disconnected")
                 self.finish()
             else:
                 try:
                     self.connection.socket.send(input().encode())
                 except KeyboardInterrupt:
-                    logger.debug("KeyboardInterrupt")
+                    logging.debug("KeyboardInterrupt")
                     self.connection.socket.send(b"Disconnecting")
                     self.finish()
 
     def finish(self):
+        logging.debug("Finishing")
         self.receiver.finish()
         self.finished = True
         self.connection.socket.close()
@@ -78,7 +77,7 @@ class Client:
 
     def __exit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:
-            logger.error((exc_type, exc_value, traceback))
+            logging.error((exc_type, exc_value, traceback))
 
         if not self.finished:
             self.finish()
@@ -87,4 +86,4 @@ class Client:
 if __name__ == '__main__':
     with Client(config.server_address) as c:
         pass
-    logger.debug("Finished")
+    logging.debug("Finished")

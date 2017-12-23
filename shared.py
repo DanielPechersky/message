@@ -2,8 +2,6 @@ from threading import Thread
 import abc
 import logging
 
-logger = logging.getLogger()
-
 
 class Connection:
     def __init__(self, socket, address):
@@ -39,8 +37,8 @@ class ConnectionHandler(Thread, abc.ABC):
 
 def parse_command(command, commands):
     try:
-        logger.info(f"Running command {command}")
+        logging.info(f"Running command {command}")
         return commands[command[1:]]()
     except KeyError:
-        logger.info("Not valid command")
+        logging.info("Not valid command")
         return False
