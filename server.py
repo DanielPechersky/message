@@ -39,6 +39,7 @@ class Listener(ConnectionHandler):
     def __init__(self, address, new_connections: Queue):
         super().__init__(Connection(socket.socket(socket.AF_INET, socket.SOCK_STREAM), address))
         self.connection.socket.bind(address)
+        self.connection.socket.listen()
 
         self.new_connections = new_connections
 
@@ -48,7 +49,6 @@ class Listener(ConnectionHandler):
         logging.debug("Listening")
         try:
             while self.active:
-                self.connection.socket.listen()
                 connection = Connection(*self.connection.socket.accept())
                 self.new_connections.put(connection)
                 logging.info(f"Accepted new connection from {connection.address}")
