@@ -37,10 +37,9 @@ class Client:
             print(decoded_message)
 
     def __init__(self, address):
-        self.address = address
-        self.connection = Connection(socket.socket(socket.AF_INET, socket.SOCK_STREAM), self.address)
+        self.connection = Connection(socket.socket(socket.AF_INET, socket.SOCK_STREAM), address)
         logging.info(f"Attempting to connect to {self.connection.address}")
-        self.connection.socket.connect(self.address)
+        self.connection.socket.connect(self.connection.address)
         logging.info("Connected successfully")
 
         self.commands = {'dc': self.stop_command}
