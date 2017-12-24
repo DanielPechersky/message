@@ -94,7 +94,7 @@ class Server:
         self.commands = {'stop': self.stop_command}
 
         self.new_connections = Queue()
-        self.listener = Listener((socket.gethostname(), port), self.new_connections)
+        self.listener = Listener(('', port), self.new_connections)
         self.listener.start()
 
         self.client_handlers = []
